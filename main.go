@@ -7,6 +7,7 @@ import (
 	"github.com/gofiber/fiber"
 	"github.com/jackc/pgx/v4"
 	"github.com/shahruk25/go-fiber-crm/database"
+	"github.com/shahruk25/go-fiber-crm/lead"
 )
 
 var db *pgx.Conn
@@ -20,11 +21,10 @@ func main() {
 }
 
 func setUpRoutes(app *fiber.App) {
-	// app.Get(GetLeads)
-	// app.Get(GetLead)
-	// app.Post(NewLead)
-	// app.Delete(DeleteLead)
-
+	app.Get("/api/v1/leads", lead.GetLeads())
+	// app.Get("/api/v1/lead/:id", lead.GetLead())
+	// app.Post("/api/v1/newLead", lead.NewLead())
+	// app.Delete("/api/v1/delLead/:id", lead.DeleteLead())
 }
 
 func initDB() {
