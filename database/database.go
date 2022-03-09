@@ -11,7 +11,7 @@ var (
 	db *pgx.Conn
 )
 
-func GetConn() {
+func GetConn() *pgx.Conn {
 
 	connString := "postgres://postgres:123456@localhost:5432/crm"
 	config, err := pgx.ParseConfig(connString)
@@ -26,9 +26,5 @@ func GetConn() {
 		log.Fatal("err connecting to the db: ", err)
 	}
 
-	db = conn
-}
-
-func GetDB() *pgx.Conn {
-	return db
+	return conn
 }
