@@ -22,9 +22,9 @@ func main() {
 
 func setUpRoutes(app *fiber.App) {
 	app.Get("/api/v1/leads", lead.GetLeads)
-	// app.Get("/api/v1/lead/:id", lead.GetLead())
-	// app.Post("/api/v1/newLead", lead.NewLead())
-	// app.Delete("/api/v1/delLead/:id", lead.DeleteLead())
+	app.Get("/api/v1/lead/:id", lead.GetLead)
+	app.Post("/api/v1/newLead", lead.NewLead)
+	app.Delete("/api/v1/delLead/:id", lead.DeleteLead)
 }
 
 func initDB() {
