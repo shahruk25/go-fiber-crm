@@ -15,17 +15,21 @@ type Lead struct {
 	Company string `json:"company"`
 	Email   string `json:"email"`
 	Phone   int    `json:"phone"`
-	IS_DEL  bool   `json:"isDel"`
+	// IS_DEL  bool   `json:"isDel"`
 }
 
 func GetLead(c *fiber.Ctx) {
 	id := c.Params("id")
 	db := database.GetConn()
-	row, err := db.Query(context.Background(), "Select name,company,email,phone,id from lead where id=$1", &id)
+	row, err := db.Query(context.Background(), "Select name,company,email,phone,id from lead where id=$1 and is_del =false", &id)
 	defer row.Close()
 	defer db.Close(context.Background())
 	if err != nil {
 		log.Fatal(err)
+	}
+	if !(row.Next()) {
+		c.JSON("No lead found")
+		return
 	}
 	var lead Lead
 	for row.Next() {
@@ -39,7 +43,7 @@ func GetLead(c *fiber.Ctx) {
 
 func GetLeads(c *fiber.Ctx) {
 	db := database.GetConn()
-	rows, err := db.Query(context.Background(), "Select name,company,email,phone,id,is_del from lead limit 10")
+	rows, err := db.Query(context.Background(), "Select name,company,email,phone,id from lead where is_del =false")
 	defer rows.Close()
 	defer db.Close(context.Background())
 	if err != nil {
@@ -48,7 +52,7 @@ func GetLeads(c *fiber.Ctx) {
 	var leads []Lead
 	for rows.Next() {
 		var lead Lead
-		err = rows.Scan(&lead.Name, &lead.Company, &lead.Email, &lead.Phone, &lead.Id, &lead.IS_DEL)
+		err = rows.Scan(&lead.Name, &lead.Company, &lead.Email, &lead.Phone, &lead.Id)
 		if err != nil {
 			log.Fatalf("Unable to scan the row. %v", err)
 		}
@@ -79,7 +83,6 @@ func NewLead(c *fiber.Ctx) {
 func DeleteLead(c *fiber.Ctx) {
 	id := c.Params("id")
 	db := database.GetConn()
-	var lead Lead
 	res, err := db.Exec(context.Background(), "Update lead set is_del = true where id=$1", &id)
 	if err != nil {
 		log.Fatalf("Unable to execute the query. %v", err)
@@ -90,5 +93,5 @@ func DeleteLead(c *fiber.Ctx) {
 		log.Fatalf("Error while checking the affected rows. %v", err)
 	}
 	fmt.Printf("Total rows/record affected %v", rowsAffected)
-	c.JSON(lead)
+	c.JSON(id)
 }
